@@ -1,0 +1,49 @@
+services:
+  sheaia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config:/app/config
+    environment:
+      - SHEAIA_ENVIRONMENT=development
+      - SHEAIA_DEBUG=true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  # Redis for task queue (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # ClickHouse for analytics (optional - can use embedded mode)
+  clickhouse:
+    image: clickhouse/clickhouse-server:24-alpine
+    ports:
+      - "9000:9000"
+      - "8123:8123"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      - CLICKHOUSE_DB=sheaia
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  clickhouse_data:

@@ -205,3 +205,24 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ========================================
+# SHEAIA specific
+# ========================================
+
+# Local data directory (databases, caches)
+data/
+
+# Model files (too large for git)
+models/
+
+# Local configuration with secrets
+config/settings.yaml
+
+# Logs
+logs/
+*.log
+
+# Node modules (frontend)
+node_modules/
+

@@ -1,0 +1,68 @@
+# SHEAIA Configuration
+# Copy this file to config/settings.yaml and customize
+
+# Application settings
+app_name: SHEAIA
+environment: development  # development, staging, production
+debug: true
+
+# Data directories
+data_dir: ./data
+models_dir: ./models
+
+# LLM settings
+llm:
+  model_path: models/llm/qwen2.5-14b-instruct-q4_k_m.gguf
+  reasoning_model_path: models/llm/qwen2.5-32b-instruct-q4_k_m.gguf
+  n_ctx: 16384
+  n_gpu_layers: -1  # -1 for all layers on GPU
+  n_batch: 512
+  device: auto  # auto, cuda:0, rocm:0, cpu
+
+# Embedding settings
+embedding:
+  model_name: BAAI/bge-m3
+  device: auto
+  batch_size: 32
+
+# Database settings
+database:
+  # ClickHouse
+  clickhouse_host: localhost
+  clickhouse_port: 9000
+  clickhouse_database: sheaia
+  clickhouse_user: default
+  clickhouse_password: ""
+  
+  # Milvus (file path for Milvus Lite)
+  milvus_uri: ./data/milvus.db
+  milvus_collection: sheaia_vectors
+  
+  # SQLite for metadata
+  sqlite_path: ./data/metadata.db
+
+# API settings
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true  # Enable in development
+  workers: 1
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+
+# Security settings
+security:
+  secret_key: "CHANGE-THIS-SECRET-KEY-IN-PRODUCTION"
+  algorithm: HS256
+  access_token_expire_minutes: 60
+  vault_master_key: ""  # Leave empty to derive from secret_key
+
+# Internationalization
+i18n:
+  default_language: en
+  supported_languages:
+    - en
+    - zh-CN
+    - zh-TW
+    - th
