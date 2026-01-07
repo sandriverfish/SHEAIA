@@ -529,6 +529,358 @@ hardware_profiles:
 
 ---
 
+## Internationalization (i18n)
+
+SHEAIA supports multiple languages to serve diverse markets across Asia and beyond.
+
+### Supported Languages
+
+| Code | Language | Region | Priority |
+|------|----------|--------|----------|
+| `en` | English | Global | P0 - Default |
+| `zh-CN` | Simplified Chinese | Mainland China | P0 |
+| `zh-TW` | Traditional Chinese | Taiwan, Hong Kong | P0 |
+| `th` | Thai | Thailand | P0 |
+
+### i18n Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        INTERNATIONALIZATION LAYER                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                     FRONTEND i18n (React)                            │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐  │   │
+│  │  │  react-i18n │  │   UI Text   │  │   Dates/    │  │  RTL/LTR   │  │   │
+│  │  │   next      │  │   Labels    │  │   Numbers   │  │  Support   │  │   │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └────────────┘  │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                     BACKEND i18n (Python)                            │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐  │   │
+│  │  │   Error     │  │   Agent     │  │   Report    │  │   Email/   │  │   │
+│  │  │  Messages   │  │  Responses  │  │  Templates  │  │   Notifs   │  │   │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └────────────┘  │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                     LLM i18n (Multilingual)                          │   │
+│  │  ┌─────────────────────────────────────────────────────────────┐    │   │
+│  │  │  Qwen2.5 - Native multilingual support (zh/en/th)           │    │   │
+│  │  │  bge-m3 - Multilingual embeddings (100+ languages)          │    │   │
+│  │  └─────────────────────────────────────────────────────────────┘    │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Frontend i18n Implementation
+
+```typescript
+// i18n configuration with react-i18next
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+i18n.use(initReactI18next).init({
+  resources: {
+    en: { translation: require('./locales/en.json') },
+    'zh-CN': { translation: require('./locales/zh-CN.json') },
+    'zh-TW': { translation: require('./locales/zh-TW.json') },
+    th: { translation: require('./locales/th.json') },
+  },
+  lng: 'en',
+  fallbackLng: 'en',
+  interpolation: { escapeValue: false }
+});
+```
+
+### Translation File Structure
+
+```
+frontend/src/locales/
+├── en.json           # English (default)
+├── zh-CN.json        # Simplified Chinese
+├── zh-TW.json        # Traditional Chinese
+└── th.json           # Thai
+
+# Example: en.json
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading..."
+  },
+  "chat": {
+    "placeholder": "Ask a question about your data...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "sources": "Sources",
+    "showSQL": "Show SQL"
+  },
+  "connectors": {
+    "title": "Data Connectors",
+    "add": "Add Connector",
+    "test": "Test Connection",
+    "sync": "Sync Now",
+    "status": {
+      "connected": "Connected",
+      "error": "Connection Error",
+      "syncing": "Syncing..."
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "generate": "Generate Report",
+    "schedule": "Schedule",
+    "export": "Export"
+  }
+}
+
+# Example: zh-CN.json
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "search": "搜索",
+    "loading": "加载中..."
+  },
+  "chat": {
+    "placeholder": "询问关于您数据的问题...",
+    "send": "发送",
+    "thinking": "思考中...",
+    "sources": "数据来源",
+    "showSQL": "显示SQL"
+  }
+}
+
+# Example: zh-TW.json
+{
+  "common": {
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "search": "搜尋",
+    "loading": "載入中..."
+  },
+  "chat": {
+    "placeholder": "詢問關於您資料的問題...",
+    "send": "傳送",
+    "thinking": "思考中...",
+    "sources": "資料來源",
+    "showSQL": "顯示SQL"
+  }
+}
+
+# Example: th.json
+{
+  "common": {
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "search": "ค้นหา",
+    "loading": "กำลังโหลด..."
+  },
+  "chat": {
+    "placeholder": "ถามคำถามเกี่ยวกับข้อมูลของคุณ...",
+    "send": "ส่ง",
+    "thinking": "กำลังคิด...",
+    "sources": "แหล่งข้อมูล",
+    "showSQL": "แสดง SQL"
+  }
+}
+```
+
+### Backend i18n Implementation
+
+```python
+# sheaia/i18n/translations.py
+from typing import Dict
+from enum import Enum
+
+class Language(str, Enum):
+    EN = "en"
+    ZH_CN = "zh-CN"
+    ZH_TW = "zh-TW"
+    TH = "th"
+
+# System messages and error codes
+TRANSLATIONS: Dict[str, Dict[Language, str]] = {
+    "error.connection_failed": {
+        Language.EN: "Failed to connect to {source}. Please check your credentials.",
+        Language.ZH_CN: "无法连接到 {source}。请检查您的凭据。",
+        Language.ZH_TW: "無法連接到 {source}。請檢查您的憑據。",
+        Language.TH: "ไม่สามารถเชื่อมต่อกับ {source} ได้ กรุณาตรวจสอบข้อมูลรับรองของคุณ",
+    },
+    "error.query_failed": {
+        Language.EN: "Query execution failed: {reason}",
+        Language.ZH_CN: "查询执行失败：{reason}",
+        Language.ZH_TW: "查詢執行失敗：{reason}",
+        Language.TH: "การดำเนินการค้นหาล้มเหลว: {reason}",
+    },
+    "agent.thinking": {
+        Language.EN: "Analyzing your question...",
+        Language.ZH_CN: "正在分析您的问题...",
+        Language.ZH_TW: "正在分析您的問題...",
+        Language.TH: "กำลังวิเคราะห์คำถามของคุณ...",
+    },
+    "agent.searching": {
+        Language.EN: "Searching across {count} data sources...",
+        Language.ZH_CN: "正在搜索 {count} 个数据源...",
+        Language.ZH_TW: "正在搜尋 {count} 個資料來源...",
+        Language.TH: "กำลังค้นหาจาก {count} แหล่งข้อมูล...",
+    },
+    "report.generated": {
+        Language.EN: "Report generated successfully",
+        Language.ZH_CN: "报告生成成功",
+        Language.ZH_TW: "報告產生成功",
+        Language.TH: "สร้างรายงานสำเร็จ",
+    },
+}
+
+def t(key: str, lang: Language = Language.EN, **kwargs) -> str:
+    """Translate a key to the specified language with interpolation."""
+    template = TRANSLATIONS.get(key, {}).get(lang)
+    if not template:
+        template = TRANSLATIONS.get(key, {}).get(Language.EN, key)
+    return template.format(**kwargs) if kwargs else template
+```
+
+### LLM System Prompts (Multilingual)
+
+```python
+# sheaia/agents/prompts.py
+SYSTEM_PROMPTS = {
+    Language.EN: """You are SHEAIA, an AI assistant that helps users query and analyze enterprise data.
+Respond in English. Be concise and precise. Always cite your data sources.""",
+
+    Language.ZH_CN: """你是 SHEAIA，一个帮助用户查询和分析企业数据的AI助手。
+请用简体中文回答。简洁准确，始终引用数据来源。""",
+
+    Language.ZH_TW: """你是 SHEAIA，一個幫助用戶查詢和分析企業數據的AI助手。
+請用繁體中文回答。簡潔準確，始終引用資料來源。""",
+
+    Language.TH: """คุณคือ SHEAIA ผู้ช่วย AI ที่ช่วยผู้ใช้สืบค้นและวิเคราะห์ข้อมูลองค์กร
+กรุณาตอบเป็นภาษาไทย สั้นกระชับและแม่นยำ อ้างอิงแหล่งข้อมูลเสมอ"""
+}
+
+def get_system_prompt(lang: Language) -> str:
+    return SYSTEM_PROMPTS.get(lang, SYSTEM_PROMPTS[Language.EN])
+```
+
+### Date/Number Formatting
+
+```typescript
+// Frontend date/number formatting
+const formatters = {
+  en: {
+    date: new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }),
+    number: new Intl.NumberFormat('en-US'),
+    currency: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+  },
+  'zh-CN': {
+    date: new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium' }),
+    number: new Intl.NumberFormat('zh-CN'),
+    currency: new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' })
+  },
+  'zh-TW': {
+    date: new Intl.DateTimeFormat('zh-TW', { dateStyle: 'medium' }),
+    number: new Intl.NumberFormat('zh-TW'),
+    currency: new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' })
+  },
+  th: {
+    date: new Intl.DateTimeFormat('th-TH', { dateStyle: 'medium' }),
+    number: new Intl.NumberFormat('th-TH'),
+    currency: new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' })
+  }
+};
+```
+
+### Language Detection & Preference
+
+```python
+# sheaia/api/middleware.py
+from fastapi import Request
+from sheaia.i18n import Language
+
+def get_user_language(request: Request) -> Language:
+    """Detect user's preferred language from request."""
+    # 1. Check explicit header
+    lang_header = request.headers.get("Accept-Language", "")
+    
+    # 2. Check user preference (from JWT/session)
+    user = getattr(request.state, "user", None)
+    if user and user.preferred_language:
+        return Language(user.preferred_language)
+    
+    # 3. Parse Accept-Language header
+    for lang in lang_header.split(","):
+        lang_code = lang.split(";")[0].strip()
+        if lang_code.startswith("zh-TW") or lang_code.startswith("zh-Hant"):
+            return Language.ZH_TW
+        elif lang_code.startswith("zh"):
+            return Language.ZH_CN
+        elif lang_code.startswith("th"):
+            return Language.TH
+        elif lang_code.startswith("en"):
+            return Language.EN
+    
+    return Language.EN  # Default fallback
+```
+
+### i18n in Reports
+
+```python
+# Report templates support multiple languages
+REPORT_SECTIONS = {
+    "executive_summary": {
+        Language.EN: "Executive Summary",
+        Language.ZH_CN: "执行摘要",
+        Language.ZH_TW: "執行摘要",
+        Language.TH: "สรุปผู้บริหาร",
+    },
+    "key_findings": {
+        Language.EN: "Key Findings",
+        Language.ZH_CN: "主要发现",
+        Language.ZH_TW: "主要發現",
+        Language.TH: "ข้อค้นพบสำคัญ",
+    },
+    "recommendations": {
+        Language.EN: "Recommendations",
+        Language.ZH_CN: "建议",
+        Language.ZH_TW: "建議",
+        Language.TH: "ข้อเสนอแนะ",
+    },
+}
+```
+
+### Font Support
+
+| Language | Recommended Fonts |
+|----------|-------------------|
+| English | Inter, Roboto, system-ui |
+| Simplified Chinese | Noto Sans SC, PingFang SC, Microsoft YaHei |
+| Traditional Chinese | Noto Sans TC, PingFang TC, Microsoft JhengHei |
+| Thai | Noto Sans Thai, Sarabun, Prompt |
+
+```css
+/* Frontend font configuration */
+:root {
+  --font-sans: 'Inter', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', system-ui, sans-serif;
+}
+
+/* Language-specific font stacks */
+[lang="zh-CN"] { font-family: 'Noto Sans SC', 'PingFang SC', sans-serif; }
+[lang="zh-TW"] { font-family: 'Noto Sans TC', 'PingFang TC', sans-serif; }
+[lang="th"] { font-family: 'Noto Sans Thai', 'Sarabun', sans-serif; }
+```
+
+---
+
 ## Technology Stack
 
 | Layer | Technology | Version/Notes |
@@ -544,6 +896,7 @@ hardware_profiles:
 | **Backend** | FastAPI | Python 3.11+ |
 | **Task Queue** | Celery + Redis | Background jobs |
 | **Frontend** | React + TypeScript | Vite build |
+| **i18n** | react-i18next (frontend), custom (backend) | 4 languages |
 | **Charts** | Recharts / ECharts | Data visualization |
 | **Messaging** | WeChat Work SDK, Feishu SDK | Python |
 | **Deployment** | Docker Compose (dev), Custom OS Image (prod) | |
@@ -619,10 +972,12 @@ sheaia/
 │   ├── agents/                  # LangGraph agents
 │   ├── connectors/              # Data connectors
 │   ├── knowledge/               # Knowledge base
+│   ├── i18n/                    # Internationalization
 │   ├── api/                     # FastAPI routes
 │   └── bots/                    # Messaging bots
 │
 ├── frontend/                    # React app
+│   └── src/locales/             # i18n translation files
 ├── models/                      # Model files
 ├── tests/                       # Test suite
 └── docs/                        # Documentation
