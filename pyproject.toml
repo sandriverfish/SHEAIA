@@ -90,9 +90,9 @@ feishu = [
 sheaia = "sheaia.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/your-org/sheaia"
-Documentation = "https://github.com/your-org/sheaia#readme"
-Repository = "https://github.com/your-org/sheaia"
+Homepage = "https://github.com/unergybot/SHEAIA"
+Documentation = "https://github.com/unergybot/SHEAIA#readme"
+Repository = "https://github.com/unergybot/SHEAIA"
 
 [tool.hatch.build.targets.wheel]
 packages = ["sheaia"]

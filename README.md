@@ -47,7 +47,7 @@ SHEAIA is an on-premise AI appliance that provides enterprise customers with nat
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/sheaia.git
+git clone https://github.com/unergybot/SHEAIA.git
 cd sheaia
 
 # Create virtual environment
@@ -103,9 +103,9 @@ sheaia/
 ## Documentation
 
 - [Platform Design](docs/plans/2026-01-07-sheaia-platform-design.md)
-- [API Reference](docs/api/README.md)
-- [User Guide](docs/user-guide/README.md)
-- [Admin Guide](docs/admin-guide/README.md)
+- [API Reference](https://github.com/unergybot/SHEAIA/tree/main/docs/api)
+- [User Guide](https://github.com/unergybot/SHEAIA/tree/main/docs/user-guide)
+- [Admin Guide](https://github.com/unergybot/SHEAIA/tree/main/docs/admin-guide)
 
 ## Development
 
